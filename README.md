@@ -1,10 +1,4 @@
 # docker-airflow
-[![CI status](https://github.com/puckel/docker-airflow/workflows/CI/badge.svg?branch=master)](https://github.com/puckel/docker-airflow/actions?query=workflow%3ACI+branch%3Amaster+event%3Apush)
-[![Docker Build status](https://img.shields.io/docker/build/puckel/docker-airflow?style=plastic)](https://hub.docker.com/r/puckel/docker-airflow/tags?ordering=last_updated)
-
-[![Docker Hub](https://img.shields.io/badge/docker-ready-blue.svg)](https://hub.docker.com/r/puckel/docker-airflow/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/puckel/docker-airflow.svg)]()
-[![Docker Stars](https://img.shields.io/docker/stars/puckel/docker-airflow.svg)]()
 
 This repository contains **Dockerfile** of [apache-airflow](https://github.com/apache/incubator-airflow) for [Docker](https://www.docker.com/)'s [automated build](https://registry.hub.docker.com/u/puckel/docker-airflow/) published to the public [Docker Hub Registry](https://registry.hub.docker.com/).
 
@@ -15,11 +9,6 @@ This repository contains **Dockerfile** of [apache-airflow](https://github.com/a
 * Install [Docker Compose](https://docs.docker.com/compose/install/)
 * Following the Airflow release from [Python Package Index](https://pypi.python.org/pypi/apache-airflow)
 
-## Installation
-
-Pull the image from the Docker repository.
-
-    docker pull puckel/docker-airflow
 
 ## Build
 
@@ -36,25 +25,10 @@ Don't forget to update the airflow images in the docker-compose files to puckel/
 
 ## Usage
 
-By default, docker-airflow runs Airflow with **SequentialExecutor** :
-
-    docker run -d -p 8080:8080 puckel/docker-airflow webserver
-
-If you want to run another executor, use the other docker-compose.yml files provided in this repository.
-
 For **LocalExecutor** :
 
     docker-compose -f docker-compose-LocalExecutor.yml up -d
 
-For **CeleryExecutor** :
-
-    docker-compose -f docker-compose-CeleryExecutor.yml up -d
-
-NB : If you want to have DAGs example loaded (default=False), you've to set the following environment variable :
-
-`LOAD_EX=n`
-
-    docker run -d -p 8080:8080 -e LOAD_EX=y puckel/docker-airflow
 
 If you want to use Ad hoc query, make sure you've configured connections:
 Go to Admin -> Connections and Edit "postgres_default" set this values (equivalent to values in airflow.cfg/docker-compose*.yml) :
@@ -99,13 +73,6 @@ In order to incorporate plugins into your docker container
 - Flower: [localhost:5555](http://localhost:5555/)
 
 
-## Scale the number of workers
-
-Easy scaling using docker-compose:
-
-    docker-compose -f docker-compose-CeleryExecutor.yml scale worker=5
-
-This can be used to scale to a multi node setup using docker swarm.
 
 ## Running other airflow commands
 
@@ -122,52 +89,4 @@ You can also use this to run a bash shell or any other command in the same envir
     docker run --rm -ti puckel/docker-airflow bash
     docker run --rm -ti puckel/docker-airflow ipython
 
-# Simplified SQL database configuration using PostgreSQL
 
-If the executor type is set to anything else than *SequentialExecutor* you'll need an SQL database.
-Here is a list of PostgreSQL configuration variables and their default values. They're used to compute
-the `AIRFLOW__CORE__SQL_ALCHEMY_CONN` and `AIRFLOW__CELERY__RESULT_BACKEND` variables when needed for you
-if you don't provide them explicitly:
-
-| Variable            | Default value |  Role                |
-|---------------------|---------------|----------------------|
-| `POSTGRES_HOST`     | `postgres`    | Database server host |
-| `POSTGRES_PORT`     | `5432`        | Database server port |
-| `POSTGRES_USER`     | `airflow`     | Database user        |
-| `POSTGRES_PASSWORD` | `airflow`     | Database password    |
-| `POSTGRES_DB`       | `airflow`     | Database name        |
-| `POSTGRES_EXTRAS`   | empty         | Extras parameters    |
-
-You can also use those variables to adapt your compose file to match an existing PostgreSQL instance managed elsewhere.
-
-Please refer to the Airflow documentation to understand the use of extras parameters, for example in order to configure
-a connection that uses TLS encryption.
-
-Here's an important thing to consider:
-
-> When specifying the connection as URI (in AIRFLOW_CONN_* variable) you should specify it following the standard syntax of DB connections,
-> where extras are passed as parameters of the URI (note that all components of the URI should be URL-encoded).
-
-Therefore you must provide extras parameters URL-encoded, starting with a leading `?`. For example:
-
-    POSTGRES_EXTRAS="?sslmode=verify-full&sslrootcert=%2Fetc%2Fssl%2Fcerts%2Fca-certificates.crt"
-
-# Simplified Celery broker configuration using Redis
-
-If the executor type is set to *CeleryExecutor* you'll need a Celery broker. Here is a list of Redis configuration variables
-and their default values. They're used to compute the `AIRFLOW__CELERY__BROKER_URL` variable for you if you don't provide
-it explicitly:
-
-| Variable          | Default value | Role                           |
-|-------------------|---------------|--------------------------------|
-| `REDIS_PROTO`     | `redis://`    | Protocol                       |
-| `REDIS_HOST`      | `redis`       | Redis server host              |
-| `REDIS_PORT`      | `6379`        | Redis server port              |
-| `REDIS_PASSWORD`  | empty         | If Redis is password protected |
-| `REDIS_DBNUM`     | `1`           | Database number                |
-
-You can also use those variables to adapt your compose file to match an existing Redis instance managed elsewhere.
-
-# Wanna help?
-
-Fork, improve and PR.
